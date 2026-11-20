@@ -1,0 +1,267 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A mobile accessory or electronics item in the Chez Moni catalog.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "nameAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 140
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "price": {
+          "type": "number"
+        },
+        "oldPrice": {
+          "type": "number"
+        },
+        "colors": {
+          "type": "array",
+          "description": "Available color names or hex values (max 12)."
+        },
+        "images": {
+          "type": "array",
+          "description": "Product image URLs (1 to 10)."
+        },
+        "inStock": {
+          "type": "boolean"
+        },
+        "isNew": {
+          "type": "boolean"
+        },
+        "isSale": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1500
+        },
+        "descriptionAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "nameAr",
+        "category",
+        "price",
+        "colors",
+        "images",
+        "inStock",
+        "isNew",
+        "isSale",
+        "description",
+        "descriptionAr",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "A storefront product category.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "nameAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        },
+        "image": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "order": {
+          "type": "number"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "slug",
+        "name",
+        "nameAr",
+        "image",
+        "order",
+        "updatedAt"
+      ]
+    },
+    "ShopSettings": {
+      "title": "ShopSettings",
+      "description": "Storefront hero content, contact details, hours, social links, and initialization state.",
+      "type": "object",
+      "properties": {
+        "heroTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "heroTitleAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "heroSubtitle": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 400
+        },
+        "heroSubtitleAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 400
+        },
+        "heroImages": {
+          "type": "array",
+          "description": "Hero showcase image URLs (up to 8)."
+        },
+        "whatsapp": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "secondaryPhone": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 30
+        },
+        "address": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "addressAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 240
+        },
+        "mapsEmbedUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        },
+        "mapsLink": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        },
+        "hours": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "hoursAr": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 160
+        },
+        "facebookUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "instagramUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "tiktokUrl": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "pinConfigured": {
+          "type": "boolean"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "heroTitle",
+        "heroTitleAr",
+        "heroSubtitle",
+        "heroSubtitleAr",
+        "heroImages",
+        "whatsapp",
+        "secondaryPhone",
+        "address",
+        "addressAr",
+        "mapsEmbedUrl",
+        "mapsLink",
+        "hours",
+        "hoursAr",
+        "facebookUrl",
+        "instagramUrl",
+        "tiktokUrl",
+        "pinConfigured",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Publicly readable product catalog items managed by the authenticated store owner."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Publicly readable storefront categories managed by the authenticated store owner."
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/ShopSettings" },
+      "description": "Publicly readable store settings document ('shop') managed by the authenticated store owner."
+    }
+  }
+}

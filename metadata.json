@@ -1,0 +1,6 @@
+{
+  "name": "Chez Moni — Your Tech Partner",
+  "description": "Mobile accessories, smartwatches, earbuds, speakers, power banks & security cameras in Zahle, Lebanon. Delivery in Zahle & all Lebanon.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

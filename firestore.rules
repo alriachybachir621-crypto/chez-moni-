@@ -1,0 +1,167 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isShopOwner() {
+      return request.auth != null && request.auth.token.email == "admin@chezmoni.app";
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll([
+          'id', 'name', 'nameAr', 'category', 'price', 'colors',
+          'images', 'inStock', 'isNew', 'isSale', 'description',
+          'descriptionAr', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'name', 'nameAr', 'category', 'price', 'oldPrice',
+          'colors', 'images', 'inStock', 'isNew', 'isSale',
+          'description', 'descriptionAr', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 140
+        && data.nameAr is string && data.nameAr.size() <= 140
+        && data.category is string && data.category.size() >= 1 && data.category.size() <= 80 && data.category.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.price is number && data.price >= 0 && data.price <= 100000
+        && (!('oldPrice' in data) || data.oldPrice == null || (data.oldPrice is number && data.oldPrice >= 0 && data.oldPrice <= 100000))
+        && data.colors is list && data.colors.size() <= 12
+        && (data.colors.size() == 0 || (data.colors[0] is string && data.colors[0].size() <= 60))
+        && data.images is list && data.images.size() >= 1 && data.images.size() <= 10
+        && data.images[0] is string && data.images[0].size() >= 1 && data.images[0].size() <= 1000
+        && data.inStock is bool
+        && data.isNew is bool
+        && data.isSale is bool
+        && data.description is string && data.description.size() <= 1500
+        && data.descriptionAr is string && data.descriptionAr.size() <= 1500
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCategory(data) {
+      return data.keys().hasAll(['id', 'slug', 'name', 'nameAr', 'image', 'order', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'slug', 'name', 'nameAr', 'image', 'order', 'updatedAt'])
+        && isValidId(data.id)
+        && data.slug is string && data.slug.size() >= 1 && data.slug.size() <= 80 && data.slug.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 80
+        && data.nameAr is string && data.nameAr.size() <= 80
+        && data.image is string && data.image.size() >= 1 && data.image.size() <= 1000
+        && data.order is number && data.order >= 0 && data.order <= 1000
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidShopSettings(data) {
+      return data.keys().hasAll([
+          'heroTitle', 'heroTitleAr', 'heroSubtitle', 'heroSubtitleAr',
+          'heroImages', 'whatsapp', 'secondaryPhone', 'address', 'addressAr',
+          'mapsEmbedUrl', 'mapsLink', 'hours', 'hoursAr',
+          'facebookUrl', 'instagramUrl', 'tiktokUrl', 'pinConfigured', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'heroTitle', 'heroTitleAr', 'heroSubtitle', 'heroSubtitleAr',
+          'heroImages', 'whatsapp', 'secondaryPhone', 'address', 'addressAr',
+          'mapsEmbedUrl', 'mapsLink', 'hours', 'hoursAr',
+          'facebookUrl', 'instagramUrl', 'tiktokUrl', 'pinConfigured', 'updatedAt'
+        ])
+        && data.heroTitle is string && data.heroTitle.size() >= 1 && data.heroTitle.size() <= 120
+        && data.heroTitleAr is string && data.heroTitleAr.size() <= 120
+        && data.heroSubtitle is string && data.heroSubtitle.size() <= 400
+        && data.heroSubtitleAr is string && data.heroSubtitleAr.size() <= 400
+        && data.heroImages is list && data.heroImages.size() <= 8
+        && (data.heroImages.size() == 0 || (data.heroImages[0] is string && data.heroImages[0].size() <= 1000))
+        && data.whatsapp is string && data.whatsapp.size() >= 1 && data.whatsapp.size() <= 30
+        && data.secondaryPhone is string && data.secondaryPhone.size() <= 30
+        && data.address is string && data.address.size() >= 1 && data.address.size() <= 240
+        && data.addressAr is string && data.addressAr.size() <= 240
+        && data.mapsEmbedUrl is string && data.mapsEmbedUrl.size() <= 1000
+        && data.mapsLink is string && data.mapsLink.size() <= 1000
+        && data.hours is string && data.hours.size() <= 160
+        && data.hoursAr is string && data.hoursAr.size() <= 160
+        && data.facebookUrl is string && data.facebookUrl.size() <= 500
+        && data.instagramUrl is string && data.instagramUrl.size() <= 500
+        && data.tiktokUrl is string && data.tiktokUrl.size() <= 500
+        && data.pinConfigured is bool
+        && data.updatedAt is timestamp;
+    }
+
+    match /test/{docId} {
+      allow get: if isValidId(docId);
+      allow list, write: if false;
+    }
+
+    match /products/{productId} {
+      allow get: if isValidId(productId);
+      allow list: if true;
+      allow create: if isShopOwner()
+        && isValidId(productId)
+        && isValidProduct(incoming())
+        && incoming().id == productId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isShopOwner()
+        && isValidId(productId)
+        && isValidProduct(incoming())
+        && incoming().id == existing().id
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'nameAr', 'category', 'price', 'oldPrice',
+          'colors', 'images', 'inStock', 'isNew', 'isSale',
+          'description', 'descriptionAr', 'updatedAt'
+        ]);
+      allow delete: if isShopOwner() && isValidId(productId);
+    }
+
+    match /categories/{categoryId} {
+      allow get: if isValidId(categoryId);
+      allow list: if true;
+      allow create: if isShopOwner()
+        && isValidId(categoryId)
+        && isValidCategory(incoming())
+        && incoming().id == categoryId
+        && incoming().updatedAt == request.time;
+      allow update: if isShopOwner()
+        && isValidId(categoryId)
+        && isValidCategory(incoming())
+        && incoming().id == existing().id
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'slug', 'name', 'nameAr', 'image', 'order', 'updatedAt'
+        ]);
+      allow delete: if isShopOwner() && isValidId(categoryId);
+    }
+
+    match /settings/{settingId} {
+      allow get: if settingId == 'shop';
+      allow list: if false;
+      allow create: if isShopOwner()
+        && settingId == 'shop'
+        && isValidShopSettings(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if isShopOwner()
+        && settingId == 'shop'
+        && isValidShopSettings(incoming())
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'heroTitle', 'heroTitleAr', 'heroSubtitle', 'heroSubtitleAr',
+          'heroImages', 'whatsapp', 'secondaryPhone', 'address', 'addressAr',
+          'mapsEmbedUrl', 'mapsLink', 'hours', 'hoursAr',
+          'facebookUrl', 'instagramUrl', 'tiktokUrl', 'pinConfigured', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+  }
+}
